@@ -20,6 +20,9 @@ public class Quiz {
     private String quizId;
     private String title;
     private String answer;
+    private long countReport = 0;
+    @Enumerated(EnumType.STRING)
+    private QuizType typeQuiz;
 
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL)
     private List<Bait> baits;

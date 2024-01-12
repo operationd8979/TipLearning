@@ -1,6 +1,7 @@
 package com.example.tipstudy.service;
 
 import com.example.tipstudy.model.entity.Quiz;
+import com.example.tipstudy.model.entity.QuizType;
 import com.example.tipstudy.model.runtime.MarkRecord;
 import com.example.tipstudy.model.runtime.QuizRecord;
 import com.example.tipstudy.model.runtime.QuizResponse;
@@ -21,8 +22,13 @@ public class QuizService {
     private final QuizRepository quizRepository;
     private final DataRetrieveUtil dataRetrieveUtil;
 
-    public List<QuizResponse> getQuizList(int length) {
-        List<Quiz> quizzes = new ArrayList<>(quizRepository.findAll());
+    public List<QuizResponse> getQuizList(int length, QuizType type){
+        List<Quiz> quizzes = new ArrayList<>(quizRepository.findAll().stream().filter(q->{
+            if(type.equals(QuizType.ALL)){
+                return true;
+            }
+            return q.getTypeQuiz().equals(type);
+        }).toList());
         if(quizzes==null||quizzes.size()<length){
             return null;
         }
@@ -72,6 +78,14 @@ public class QuizService {
             listResult.add(result);
         }
         return listResult;
+    }
+
+    public void reportQuiz(String quizId){
+        Quiz quiz = quizRepository.findById(quizId).orElse(null);
+        if(quiz!=null){
+            quiz.setCountReport(quiz.getCountReport()+1);
+            quizRepository.save(quiz);
+        }
     }
 
 

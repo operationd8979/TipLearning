@@ -1,6 +1,7 @@
 package com.example.tipstudy.controller;
 
 import com.example.tipstudy.model.entity.AppUser;
+import com.example.tipstudy.model.entity.QuizType;
 import com.example.tipstudy.model.runtime.*;
 import com.example.tipstudy.service.AppUserService;
 import com.example.tipstudy.service.QuizService;
@@ -30,12 +31,13 @@ public class UserController {
     }
 
     @GetMapping(value = "/gets/{length}")
-    public ResponseEntity<List<QuizResponse>> getQuizzes(@PathVariable("length") int length,@RequestParam String userId){
+    public ResponseEntity<List<QuizResponse>> getQuizzes(@PathVariable("length") int length,@RequestParam String userId,@RequestParam QuizType type){
         AppUser user = appUserService.loadUserByUserid(userId);
+        System.out.println(type);
         if(user==null){
             return ResponseEntity.status(403).build();
         }
-        return ResponseEntity.ok(quizService.getQuizList(length));
+        return ResponseEntity.ok(quizService.getQuizList(length,type));
     }
     @PostMapping(value = "/marks")
     public ResponseEntity<MarkRecord> mark(@RequestBody MarkRecord markRecord,@RequestParam String userId){
@@ -77,6 +79,16 @@ public class UserController {
         return ResponseEntity.ok(appUserService.updateUserInfo(updateRequest,userId));
     }
 
+    @GetMapping(value = "/reportQuiz")
+    public ResponseEntity<String> reportQuiz(@RequestParam String userId,@RequestParam String quizId){
+        AppUser user = appUserService.loadUserByUserid(userId);
+        System.out.println(quizId);
+        if(user==null){
+            return ResponseEntity.status(403).build();
+        }
+        quizService.reportQuiz(quizId);
+        return ResponseEntity.ok("OK");
+    }
 
 
 
